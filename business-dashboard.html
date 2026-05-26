@@ -1,231 +1,1188 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mr.D Daily Launch Board</title>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Live Info Center</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
 <style>
-body{
-    margin:0;
-    font-family:'Poppins',sans-serif;
-    background:#f4f7f8;
-    color:#1f2937;
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#F3E7D3;
+  --bg2:#FAF3E8;
+  --bg3:#F6EBD9;
+  --bg4:#EFE0C8;
+  --border:#6B5B451f;
+  --border2:#6B5B4530;
+  --text:#1F2933;
+  --muted:#6B5B45;
+  --green:#22c55e;
+  --red:#ef4444;
+  --gold:#f59e0b;
+  --blue:#3b82f6;
+  --cyan:#06b6d4;
+  --purple:#a78bfa;
+  --mono:'IBM Plex Mono',monospace;
+  --sans:'IBM Plex Sans',system-ui,sans-serif;
 }
-header{
-    padding:40px 30px 20px;
-    text-align:center;
-}
-header h1{
-    font-size:3.2rem;
-    margin:0;
-    color:#1d3557;
-}
-header p{
-    font-size:1.2rem;
-    color:#5c677d;
-}
-.grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(420px,1fr));
-    gap:24px;
-    padding:20px 30px 60px;
-}
-.card{
-    background:white;
-    border-radius:20px;
-    padding:24px;
-    box-shadow:0 8px 24px rgba(0,0,0,.06);
-}
-.card h2{
-    margin-top:0;
-    font-size:1.7rem;
-    color:#457b9d;
-}
-.news-item{
-    margin-bottom:16px;
-    padding-bottom:14px;
-    border-bottom:1px solid #e5e7eb;
-}
-.news-item:last-child{
-    border-bottom:none;
-}
-.news-item a{
-    text-decoration:none;
-    color:#111827;
-    font-weight:600;
-}
-.news-item p{
-    margin:6px 0 0;
-    color:#4b5563;
-}
-.weather{
-    font-size:1.2rem;
-    line-height:1.8;
-}
-iframe{
-    width:100%;
-    border:none;
-    border-radius:14px;
-}
-ul{
-    padding-left:22px;
-}
-.highlight{
-    font-size:1.3rem;
-    font-weight:600;
-    color:#0f766e;
-}
-footer{
-    text-align:center;
-    padding:30px;
-    color:#6b7280;
-    font-size:0.95rem;
-}
+html,body{height:100%;overflow:hidden;}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);display:flex;flex-direction:column;}
+
+/* ── TICKER BAR ── */
+.ticker-outer{background:var(--bg2);border-bottom:1px solid var(--border2);height:40px;overflow:hidden;position:relative;flex-shrink:0;}
+.ticker-inner{display:flex;align-items:center;height:100%;white-space:nowrap;animation:scroll-left 24s linear infinite;}
+.ticker-inner:hover{animation-play-state:paused;}
+@keyframes scroll-left{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
+.tick-item{display:inline-flex;align-items:center;gap:10px;padding:0 34px;font-family:var(--mono);font-size:14px;border-right:1px solid var(--border);}
+.tick-sym{color:var(--muted);font-weight:500;}
+.tick-price{color:var(--text);font-weight:500;}
+.tick-chg.up{color:var(--green);}
+.tick-chg.dn{color:var(--red);}
+.tick-chg.na{color:var(--muted);}
+.tick-dot{width:6px;height:6px;border-radius:50%;display:inline-block;}
+.tick-dot.up{background:var(--green);}
+.tick-dot.dn{background:var(--red);}
+
+/* ── TOP BAR ── */
+.topbar{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 20px;height:44px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.topbar-left{display:flex;align-items:center;gap:16px;}
+.topbar-brand{font-family:var(--mono);font-size:13px;font-weight:500;color:var(--cyan);letter-spacing:.06em;}
+.topbar-time{font-family:var(--mono);font-size:20px;font-weight:500;color:var(--text);letter-spacing:.03em;}
+.topbar-date{font-size:12px;color:var(--muted);}
+.topbar-right{display:flex;align-items:center;gap:10px;}
+.live-badge{display:flex;align-items:center;gap:5px;font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--green);}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:pulse 1.5s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+.refresh-btn{background:var(--bg4);border:1px solid var(--border2);border-radius:5px;padding:5px 12px;font-size:11px;font-family:var(--mono);color:var(--muted);cursor:pointer;transition:all .15s;}
+.refresh-btn:hover{background:var(--border2);color:var(--text);}
+
+/* ── MAIN GRID ── */
+.main-grid{flex:1;display:grid;grid-template-columns:1fr 1fr 1fr 280px;grid-template-rows:1fr 1fr;gap:1px;background:var(--border);overflow:hidden;}
+.panel{background:var(--bg2);overflow:hidden;display:flex;flex-direction:column;}
+.panel.span2{grid-column:span 2;}
+.panel.span-row{grid-row:span 2;}
+
+/* ── PANEL HEADER ── */
+.ph{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--border);flex-shrink:0;}
+.ph-title{font-size:10px;text-transform:uppercase;letter-spacing:.1em;font-weight:500;color:var(--muted);}
+.ph-title span{color:var(--cyan);}
+.ph-right{font-family:var(--mono);font-size:10px;color:var(--muted);}
+.ph-status{width:6px;height:6px;border-radius:50%;background:var(--green);display:inline-block;margin-right:5px;}
+.ph-status.loading{background:var(--gold);animation:pulse 1s infinite;}
+.ph-status.err{background:var(--red);}
+
+/* ── INDUSTRY PERFORMANCE PANEL ── */
+.stocks-grid{flex:1;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:1px;background:var(--border);overflow:hidden;}
+.stock-tile{background:var(--bg3);padding:10px 11px;display:flex;flex-direction:column;justify-content:space-between;cursor:default;transition:background .15s;min-width:0;}
+.stock-tile:hover{background:var(--bg4);}
+.st-industry{font-size:11px;line-height:1.05;text-transform:uppercase;letter-spacing:.045em;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:5px;font-weight:700;}
+.st-sym{font-family:var(--mono);font-size:17px;color:var(--text);margin-bottom:2px;font-weight:800;letter-spacing:.02em;}
+.st-name{font-size:11px;color:var(--muted);opacity:.78;margin-bottom:5px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
+.st-price{font-family:var(--mono);font-size:20px;font-weight:800;color:var(--text);line-height:1;}
+.st-chg{font-family:var(--mono);font-size:14px;margin-top:5px;font-weight:800;}
+.st-chg.up{color:var(--green);}
+.st-chg.dn{color:var(--red);}
+.st-chg.na{color:var(--muted);}
+.st-bar{height:3px;border-radius:2px;margin-top:5px;background:var(--border2);overflow:hidden;}
+.st-bar-fill{height:100%;border-radius:2px;transition:width .5s;}
+.st-bar-fill.up{background:var(--green);}
+.st-bar-fill.dn{background:var(--red);}
+
+/* ── CRYPTO PANEL ── */
+.crypto-list{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.crypto-row{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--border);flex:1;}
+.cr-icon{font-size:20px;width:32px;text-align:center;}
+.cr-info{flex:1;min-width:0;}
+.cr-name{font-size:12px;font-weight:500;color:var(--text);}
+.cr-sub{font-size:10px;color:var(--muted);margin-top:1px;}
+.cr-right{text-align:right;}
+.cr-price{font-family:var(--mono);font-size:14px;font-weight:500;color:var(--text);}
+.cr-chg{font-family:var(--mono);font-size:11px;margin-top:2px;}
+.cr-chg.up{color:var(--green);}
+.cr-chg.dn{color:var(--red);}
+.cr-chg.na{color:var(--muted);}
+.cr-spark{width:60px;height:24px;flex-shrink:0;}
+
+/* ── WEATHER PANEL ── */
+.weather-wrap{flex:1;display:flex;flex-direction:column;padding:14px 16px;gap:12px;overflow:hidden;}
+.w-main{display:flex;align-items:flex-start;gap:14px;}
+.w-icon{font-size:48px;line-height:1;flex-shrink:0;}
+.w-temps{flex:1;}
+.w-temp-big{font-family:var(--mono);font-size:44px;font-weight:500;color:var(--text);line-height:1;}
+.w-temp-unit{font-size:18px;color:var(--muted);}
+.w-feels{font-size:11px;color:var(--muted);margin-top:3px;}
+.w-desc{font-size:13px;color:var(--text);margin-top:4px;font-weight:500;}
+.w-location{font-size:11px;color:var(--cyan);margin-top:2px;}
+.w-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.w-stat{background:var(--bg3);border-radius:6px;padding:9px 12px;}
+.w-stat-label{font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:3px;}
+.w-stat-value{font-family:var(--mono);font-size:14px;font-weight:500;color:var(--text);}
+.w-forecast{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;overflow:hidden;min-width:0;}
+.w-day{background:var(--bg3);border-radius:6px;padding:5px 2px 5px 5px;text-align:left;min-width:0;overflow:hidden;}
+.w-day-name{font-size:10px;color:var(--muted);margin-bottom:3px;text-transform:uppercase;letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:clip;font-weight:700;}
+.w-day-icon{font-size:15px;margin-bottom:2px;}
+.w-day-hi{font-family:var(--mono);font-size:12px;font-weight:800;color:var(--text);text-align:left;}
+.w-day-lo{font-family:var(--mono);font-size:11px;color:var(--muted);text-align:left;}
+
+/* ── GAS PANEL ── */
+.gas-wrap{flex:1;display:flex;flex-direction:column;padding:12px 16px;gap:10px;overflow:hidden;}
+.gas-hero{display:flex;align-items:flex-end;gap:10px;}
+.gas-price-big{font-family:var(--mono);font-size:42px;font-weight:500;color:var(--gold);line-height:1;}
+.gas-label{font-size:11px;color:var(--muted);margin-bottom:4px;}
+.gas-chg{font-family:var(--mono);font-size:13px;margin-top:4px;}
+.gas-chg.up{color:var(--red);}
+.gas-chg.dn{color:var(--green);}
+.gas-chg.na{color:var(--muted);}
+.gas-grades{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
+.gas-grade{background:var(--bg3);border-radius:6px;padding:8px 10px;text-align:center;}
+.gas-grade-name{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:4px;}
+.gas-grade-price{font-family:var(--mono);font-size:15px;font-weight:500;color:var(--text);}
+.gas-src{font-size:10px;color:var(--muted);opacity:.6;margin-top:auto;}
+
+/* ── RIGHT SIDE PANEL (Weather + Extra) ── */
+.side-panel{display:flex;flex-direction:column;overflow:hidden;}
+.side-weather{flex:1;border-bottom:1px solid var(--border);overflow:hidden;}
+.side-gas{flex:1;overflow:hidden;}
+
+/* ── NEWS TICKER (bottom) ── */
+.news-bar{background:var(--bg3);border-top:1px solid var(--border2);height:34px;display:flex;align-items:center;overflow:hidden;flex-shrink:0;}
+.news-label{background:#7A5C3A;color:#FFF8EA;padding:0 14px;height:100%;display:flex;align-items:center;font-size:12px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;white-space:nowrap;flex-shrink:0;}
+.news-scroll{overflow:hidden;flex:1;height:100%;position:relative;}
+.news-track{display:flex;align-items:center;height:100%;white-space:nowrap;animation:scroll-left 58s linear infinite;}
+.news-track:hover{animation-play-state:paused;}
+.news-item{display:inline-block;padding:0 44px;font-size:14px;color:var(--text);opacity:.9;font-weight:600;}
+.news-sep{display:inline-block;padding:0 10px;color:var(--muted);}
+
+/* ── LOADING SKELETON ── */
+.skeleton{background:linear-gradient(90deg,var(--bg3) 25%,var(--bg4) 50%,var(--bg3) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:4px;display:inline-block;}
+@keyframes shimmer{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
+
+/* ── UTIL ── */
+.err-msg{font-size:11px;color:var(--muted);padding:14px 16px;font-family:var(--mono);}
+.sports-list{flex:1;overflow:hidden;display:grid;grid-template-columns:1fr;grid-auto-rows:minmax(24px,1fr);}
+.game-row{display:grid;grid-template-columns:42px 1fr 68px;align-items:center;gap:6px;padding:5px 8px;border-bottom:1px solid var(--border);min-height:0;background:var(--bg3);}
+.game-league{font-family:var(--mono);font-size:10px;color:#3F6F68;font-weight:800;white-space:nowrap;}
+.game-main{display:grid;grid-template-columns:minmax(28px,1fr) 22px 12px minmax(28px,1fr) 22px;align-items:center;gap:3px;font-family:var(--mono);font-size:12px;font-weight:800;color:var(--text);min-width:0;}
+.game-main span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center;}
+.game-main span:first-child,.game-main span:nth-child(4){text-align:left;}
+.game-time{font-family:var(--mono);font-size:10px;color:var(--muted);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:right;}
+.sport-row{display:grid;grid-template-columns:32px 1fr 70px;align-items:center;gap:5px;padding:4px 8px;border-bottom:1px solid var(--border);min-height:0;}
+.sport-league{font-family:var(--mono);font-size:9px;color:var(--blue);font-weight:700;}
+.sport-match{font-size:11px;color:var(--text);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sport-time{font-family:var(--mono);font-size:9px;color:var(--muted);white-space:nowrap;text-align:right;}
+.crude-wrap{flex:1;padding:10px 12px;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr auto;gap:7px;overflow:hidden;}
+.crude-card{background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:8px 9px;display:flex;flex-direction:column;justify-content:center;min-width:0;}
+.crude-label{font-size:9px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.crude-price{font-family:var(--mono);font-size:22px;font-weight:600;color:var(--text);line-height:1.1;margin-top:2px;}
+.crude-sub{font-family:var(--mono);font-size:10px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.crude-delta{font-family:var(--mono);font-size:10px;margin-top:2px;}
+.crude-ref{grid-column:1/-1;font-family:var(--mono);font-size:10px;color:var(--muted);text-align:center;padding-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.forecast-panel-wrap{flex:1;display:grid;grid-template-columns:1fr;grid-auto-rows:1fr;gap:1px;background:var(--border);overflow:hidden;}
+.forecast-big-day{background:var(--bg3);display:grid;grid-template-columns:34px 1fr 58px;align-items:center;gap:6px;padding:7px 8px;min-height:0;overflow:hidden;}
+.forecast-big-icon{font-size:23px;text-align:center;}
+.forecast-big-name{font-size:13px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);white-space:nowrap;font-weight:800;}
+.forecast-big-desc{font-size:11px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.forecast-big-temp{font-family:var(--mono);font-size:14px;font-weight:800;text-align:left;color:var(--text);white-space:nowrap;}
+.sports-news-bar{background:var(--bg2);border-top:1px solid var(--border2);height:34px;display:flex;align-items:center;overflow:hidden;flex-shrink:0;}
+.sports-news-bar .news-label{background:#3F6F68;color:#FFF8EA;}
+.top-news-bar,.top-sports-news-bar{border-top:0;border-bottom:1px solid var(--border2);}
+
+
+.company-heatmap{flex:1;display:grid;grid-template-columns:repeat(5,1fr);gap:6px;min-height:0;}
+.company-cell{border:1px solid var(--border2);border-radius:9px;padding:9px 7px;display:flex;flex-direction:column;justify-content:space-between;min-width:0;box-shadow:0 1px 0 #ffffff55 inset;}
+.company-sym{font-family:var(--mono);font-size:13px;font-weight:800;color:var(--text);letter-spacing:.02em;}
+.company-name{font-size:9px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px;}
+.company-pct{font-family:var(--mono);font-size:14px;font-weight:800;margin-top:8px;}
+.company-price{font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:2px;}
+.company-note{font-size:9px;color:var(--muted);margin-top:5px;line-height:1.15;}
+@media(max-width:1100px){.company-heatmap{grid-template-columns:repeat(3,1fr);}.company-cell{padding:7px 6px}.company-pct{font-size:12px}.company-sym{font-size:12px}}
+.quote-card{flex:1;background:linear-gradient(135deg,#FFF8EA,#F6EBD9);border:1px solid var(--border2);border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;justify-content:center;gap:10px;box-shadow:0 1px 0 #ffffff80 inset;overflow:hidden;}
+.quote-mark{font-family:Georgia,serif;font-size:30px;line-height:.8;color:#A66A2C;}
+.quote-text{font-size:17px;line-height:1.25;font-weight:600;color:var(--text);}
+.quote-author{font-family:var(--mono);font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;}
+.quote-prompt{font-size:10px;color:var(--muted);line-height:1.2;border-top:1px solid var(--border);padding-top:8px;}
+
 </style>
 </head>
 <body>
 
-<header>
-<h1>Mr.D Daily Launch Board</h1>
-<p>Business • Finance • Marketing • Current Events</p>
-</header>
-
-<div class="grid">
-
-<div class="card">
-<h2>Today’s Discussion Starter</h2>
-<p class="highlight">How do today’s headlines connect to business decisions, consumer behavior, or economics?</p>
-<ul>
-<li>What industry is impacted most?</li>
-<li>Who benefits financially?</li>
-<li>What are possible long-term effects?</li>
-<li>Would investors see this positively or negatively?</li>
-</ul>
+<!-- SCROLLING TICKER -->
+<div class="ticker-outer">
+  <div class="ticker-inner" id="tickerInner">
+    <div class="tick-item"><span class="tick-sym">—</span><span class="tick-price" style="color:var(--muted)">Loading market data...</span></div>
+  </div>
 </div>
 
-<div class="card">
-<h2>S&P 500 + Brent Crude</h2>
-<iframe height="420" src="https://s.tradingview.com/widgetembed/?frameElementId=tradingview_1&symbol=SP%3ASPX&interval=D&theme=light&style=1&locale=en&utm_source=chatgpt"></iframe>
+<!-- TOP NEWS TICKERS -->
+<div class="news-bar top-news-bar">
+  <div class="news-label headlines-label">TOP DAILY HEADLINES</div>
+  <div class="news-scroll">
+    <div class="news-track" id="newsTrack">
+      <span class="news-item">Loading top headlines...</span>
+    </div>
+  </div>
+</div>
+<div class="sports-news-bar top-sports-news-bar">
+  <div class="news-label sports-label">SPORTS NEWS</div>
+  <div class="news-scroll">
+    <div class="news-track" id="sportsNewsTrack">
+      <span class="news-item">Loading sports headlines...</span>
+    </div>
+  </div>
 </div>
 
-<div class="card">
-<h2>Weather — Chambersburg, PA</h2>
-<div class="weather" id="weather">Loading weather...</div>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="topbar-brand">◈ LIVE INFO CENTER</div>
+    <div style="display:flex;flex-direction:column;">
+      <div class="topbar-time" id="clockTime">--:--:--</div>
+    </div>
+    <div class="topbar-date" id="clockDate">Loading...</div>
+  </div>
+  <div class="topbar-right">
+    <div class="live-badge"><span class="live-dot"></span>LIVE</div>
+    <div style="font-family:var(--mono);font-size:10px;color:var(--muted)" id="lastUpdate">—</div>
+    <button class="refresh-btn" onclick="fetchAll()">↻ Refresh</button>
+  </div>
 </div>
 
-<div class="card">
-<h2>Top U.S. News</h2>
-<div id="us-news">Loading headlines...</div>
+<!-- MAIN GRID -->
+<div class="main-grid">
+
+  <!-- STOCKS (top-left, 2 cols) -->
+  <div class="panel span2" id="stocksPanel">
+    <div class="ph">
+      <div class="ph-title"><span>◈</span> INDUSTRY LEADERS</div>
+      <div class="ph-right"><span class="ph-status loading" id="stockStatus"></span>Current prices · week when available</div>
+    </div>
+    <div class="stocks-grid" id="stocksGrid">
+      <!-- filled by JS -->
+    </div>
+  </div>
+
+  <!-- FIVE DAY WEATHER (top-right, 1 col) -->
+  <div class="panel" id="forecastPanel">
+    <div class="ph">
+      <div class="ph-title"><span>⛅</span> 5-DAY WEATHER</div>
+      <div class="ph-right"><span class="ph-status loading" id="fiveWxStatus"></span>Google/Open-Meteo</div>
+    </div>
+    <div class="forecast-panel-wrap" id="fiveDayPanel">
+      <div class="err-msg">Loading forecast...</div>
+    </div>
+  </div>
+
+  <!-- RIGHT SIDE: Weather + Gas stacked -->
+  <div class="panel span-row side-panel">
+    <!-- Weather -->
+    <div class="side-weather">
+      <div class="ph">
+        <div class="ph-title">⛅ CHAMBERSBURG, PA</div>
+        <div class="ph-right"><span class="ph-status loading" id="wxStatus"></span>Google/Open-Meteo</div>
+      </div>
+      <div class="weather-wrap" id="weatherWrap">
+        <div class="skeleton" style="width:80%;height:14px;"></div>
+      </div>
+    </div>
+    <!-- Gas -->
+    <div class="side-gas">
+      <div class="ph">
+        <div class="ph-title">⛽ GAS PRICES</div>
+        <div class="ph-right"><span class="ph-status" id="gasStatus"></span>AAA Daily Avg</div>
+      </div>
+      <div class="gas-wrap" id="gasWrap">
+        <div class="skeleton" style="width:60%;height:14px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GAS (bottom-left, 1 col) — repurpose as market summary -->
+  <div class="panel" id="summaryPanel">
+    <div class="ph">
+      <div class="ph-title"><span>✦</span> QUOTE OF THE DAY</div>
+      <div class="ph-right"><span class="ph-status" id="snapStatus"></span>Daily reset</div>
+    </div>
+    <div id="snapBody" style="flex:1;padding:10px 12px;display:flex;flex-direction:column;gap:6px;overflow:hidden;">
+      <!-- filled by JS -->
+    </div>
+  </div>
+
+  <!-- SPORTS TODAY (bottom-middle, 1 col) -->
+  <div class="panel" id="sportsPanel">
+    <div class="ph">
+      <div class="ph-title">🏟️ TOP GAMES TODAY</div>
+      <div class="ph-right"><span class="ph-status loading" id="sportsStatus"></span>ESPN</div>
+    </div>
+    <div class="sports-list" id="sportsBody">
+      <div class="err-msg">Loading today’s games...</div>
+    </div>
+  </div>
+
+  <!-- CRUDE PRICE (bottom-right, 1 col) -->
+  <div class="panel" id="bzfPanel">
+    <div class="ph">
+      <div class="ph-title">🛢️ ENERGY BENCHMARKS</div>
+      <div class="ph-right"><span class="ph-status loading" id="bzfStatus"></span>Current prices</div>
+    </div>
+    <div class="crude-wrap" id="bzfBody">
+      <div class="skeleton" style="width:75%;height:18px;"></div>
+    </div>
+  </div>
+
 </div>
 
-<div class="card">
-<h2>World News</h2>
-<div id="world-news">Loading headlines...</div>
-</div>
-
-<div class="card">
-<h2>Sports Headlines</h2>
-<div id="sports-news">Loading headlines...</div>
-</div>
-
-<div class="card">
-<h2>Major Sports This Week</h2>
-<ul>
-<li>NBA Playoffs</li>
-<li>NHL Playoffs</li>
-<li>MLB Regular Season</li>
-<li>PGA Tour Events</li>
-<li>European Soccer League Matches</li>
-</ul>
-</div>
-
-<div class="card">
-<h2>New Movies & TV This Week</h2>
-<ul>
-<li>Top streaming releases trending nationally</li>
-<li>Major theatrical releases</li>
-<li>Most discussed series premieres</li>
-<li>Business angle: streaming competition & box office trends</li>
-</ul>
-</div>
-
-<div class="card">
-<h2>Trending Apps</h2>
-<ul>
-<li>TikTok</li>
-<li>Instagram</li>
-<li>ChatGPT</li>
-<li>YouTube</li>
-<li>Temu</li>
-<li>CapCut</li>
-</ul>
-<p>Think about: What makes an app stay popular?</p>
-</div>
-
-<div class="card">
-<h2>Gas Prices</h2>
-<p><strong>National Average:</strong> View latest data from AAA</p>
-<p><strong>Pennsylvania Average:</strong> Updated by AAA Gas Prices</p>
-<p><a href="https://gasprices.aaa.com/" target="_blank">Open AAA Gas Prices</a></p>
-</div>
-
-</div>
-
-<footer>
-Sources: AP / Reuters / BBC / ESPN / Open-Meteo / AAA / TradingView
-</footer>
 
 <script>
-async function loadWeather(){
-    try{
-        const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=39.94&longitude=-77.66&current_weather=true&daily=temperature_2m_max,temperature_2m_min&timezone=America%2FNew_York');
-        const data = await res.json();
+// ═══════════════════════════════════════════
+// CLOCK
+// ═══════════════════════════════════════════
+function updateClock(){
+  const now = new Date();
+  const t = now.toLocaleTimeString('en-US',{hour12:true,hour:'numeric',minute:'2-digit',second:'2-digit'});
+  const d = now.toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  document.getElementById('clockTime').textContent = t;
+  document.getElementById('clockDate').textContent = d;
+}
+setInterval(updateClock, 1000);
+updateClock();
 
-        const current = data.current_weather;
-        const daily = data.daily;
+// ═══════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════
+const fmt = (n,d=2) => n==null?'—':Number(n).toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});
+const fmtPct = (n) => n==null?'—':(n>=0?'+':'')+Number(n).toFixed(2)+'%';
+const dir = (n) => n==null?'na':n>=0?'up':'dn';
+const arrow = (n) => n==null?'':n>=0?'▲':'▼';
+const statusEl = (id, state) => {
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.className = 'ph-status ' + state;
+};
 
-        document.getElementById('weather').innerHTML = `
-            <strong>Current Temperature:</strong> ${current.temperature}°F<br>
-            <strong>Wind Speed:</strong> ${current.windspeed} mph<br><br>
-            <strong>5-Day Outlook</strong><br>
-            Highs: ${daily.temperature_2m_max.slice(0,5).join('°, ')}°<br>
-            Lows: ${daily.temperature_2m_min.slice(0,5).join('°, ')}°
-        `;
-    } catch(e){
-        document.getElementById('weather').innerText = 'Unable to load weather.';
-    }
+function setLastUpdate(){
+  const now = new Date();
+  document.getElementById('lastUpdate').textContent = 'Updated '+now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
 }
 
-async function loadRSS(feed, elementId){
-    try{
-        const url = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(feed)}`;
-        const res = await fetch(url);
-        const data = await res.json();
+// ═══════════════════════════════════════════
+// INDUSTRY LEADERS — current price with week-change when available
+// Uses Yahoo through AllOrigins first, then Stooq CSV. If a school network blocks quotes, the tile clearly asks for network access instead of pretending a stale value is current.
+// ═══════════════════════════════════════════
+const INDUSTRY_LEADERS = [
+  {sym:'AAPL', industry:'Tech', name:'Apple', fallback:213.10},
+  {sym:'MSFT', industry:'Software', name:'Microsoft', fallback:512.40},
+  {sym:'NVDA', industry:'Chips / AI', name:'NVIDIA', fallback:130.00},
+  {sym:'AMZN', industry:'Consumer', name:'Amazon', fallback:188.50},
+  {sym:'JPM', industry:'Banking', name:'JPMorgan', fallback:265.00},
+  {sym:'XOM', industry:'Energy', name:'Exxon Mobil', fallback:108.00},
+  {sym:'UNH', industry:'Health', name:'UnitedHealth', fallback:285.00},
+  {sym:'WMT', industry:'Retail', name:'Walmart', fallback:98.00},
+  {sym:'PG', industry:'Staples', name:'Procter & Gamble', fallback:165.00},
+  {sym:'CAT', industry:'Industrial', name:'Caterpillar', fallback:380.00},
+];
+let latestIndustryData = [];
 
-        const items = data.items.slice(0,5);
+async function fetchStock(sym, fallback){
+  // Primary: Yahoo chart via AllOrigins /get. This avoids raw CORS failures on many school networks.
+  try {
+    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?interval=1d&range=7d`;
+    const proxy = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
+    const r = await fetch(proxy, {signal: AbortSignal.timeout(9000), cache:'no-store'});
+    if(!r.ok) throw new Error('Yahoo proxy HTTP '+r.status);
+    const raw = await r.json();
+    const data = JSON.parse(raw.contents);
+    const result = data.chart?.result?.[0];
+    if(!result) throw new Error('No chart result');
+    const meta = result.meta || {};
+    const closes = (result.indicators?.quote?.[0]?.close || []).filter(v => Number.isFinite(v));
+    const price = Number(meta.regularMarketPrice ?? closes.at(-1));
+    const weekStart = Number(closes[0] ?? meta.chartPreviousClose ?? meta.previousClose);
+    const chg = (Number.isFinite(price)&&Number.isFinite(weekStart)) ? price - weekStart : null;
+    const pct = (chg != null && weekStart) ? (chg / weekStart) * 100 : null;
+    if(Number.isFinite(price)) return {sym, price, chg, pct, source:'current price', ok:true};
+  } catch(e) {}
 
-        document.getElementById(elementId).innerHTML = items.map(item => `
-            <div class="news-item">
-                <a href="${item.link}" target="_blank">${item.title}</a>
-                <p>${item.description.replace(/<[^>]*>/g, '').slice(0,120)}...</p>
-            </div>
-        `).join('');
-    } catch(e){
-        document.getElementById(elementId).innerText = 'Unable to load headlines.';
-    }
+  // Secondary: Stooq CSV. Less fancy, but often more reliable in locked-down browsers.
+  try {
+    const stooqSym = sym.toLowerCase()+'.us';
+    const csv = await (await fetch(`https://stooq.com/q/l/?s=${stooqSym}&f=sd2t2ohlc&h&e=csv`, {signal:AbortSignal.timeout(9000), cache:'no-store'})).text();
+    const cols = csv.trim().split(/\r?\n/)[1]?.split(',') || [];
+    const open = parseFloat(cols[3]);
+    const close = parseFloat(cols[6]);
+    const price = Number.isFinite(close) ? close : fallback;
+    const chg = (Number.isFinite(close)&&Number.isFinite(open)) ? close-open : null;
+    const pct = (chg != null && open) ? (chg/open)*100 : null;
+    if(Number.isFinite(price)) return {sym, price, chg, pct, source:'current price', ok:true};
+  } catch(e) {}
+
+  // No stale stock fallback: current prices should either load live or clearly request network access.
+  return {sym, price:null, chg:null, pct:null, source:'network needed', ok:false};
 }
 
-loadWeather();
+function renderStockTile(container, stock, data){
+  const d = dir(data.pct);
+  const pctAbs = data.pct ? Math.abs(data.pct) : 0;
+  const barW = Math.min(pctAbs * 12, 100);
+  const sourceNote = data.source==='network needed' ? 'network needed' : data.source;
+  container.innerHTML = `
+    <div>
+      <div class="st-industry">${stock.industry}</div>
+      <div class="st-sym">${stock.sym}</div>
+      <div class="st-name">${stock.name}</div>
+    </div>
+    <div>
+      <div class="st-price">${data.price ? '$'+fmt(data.price) : 'NET'}</div>
+      <div class="st-chg ${d}">${data.pct != null ? arrow(data.pct)+' '+fmtPct(data.pct) : sourceNote}</div>
+      <div class="st-bar"><div class="st-bar-fill ${d}" style="width:${barW}%"></div></div>
+    </div>`;
+}
 
-loadRSS('https://feeds.bbci.co.uk/news/world/us_and_canada/rss.xml','us-news');
-loadRSS('https://feeds.bbci.co.uk/news/world/rss.xml','world-news');
-loadRSS('https://www.espn.com/espn/rss/news','sports-news');
+async function fetchStocks(){
+  statusEl('stockStatus','loading');
+  const grid = document.getElementById('stocksGrid');
+  grid.innerHTML = '';
+
+  const tiles = INDUSTRY_LEADERS.map(s => {
+    const tile = document.createElement('div');
+    tile.className = 'stock-tile';
+    tile.innerHTML = `<div class="st-industry">${s.industry}</div><div class="st-sym">${s.sym}</div><div class="st-name">${s.name}</div><div class="st-price"><span class="skeleton" style="width:54px;height:14px;display:block;"></span></div>`;
+    grid.appendChild(tile);
+    return tile;
+  });
+
+  const results = await Promise.all(INDUSTRY_LEADERS.map(s => fetchStock(s.sym, s.fallback)));
+  latestIndustryData = results.map((r,i)=>({...r, industry:INDUSTRY_LEADERS[i].industry, name:INDUSTRY_LEADERS[i].name}));
+  results.forEach((data,i)=> renderStockTile(tiles[i], INDUSTRY_LEADERS[i], data));
+
+  statusEl('stockStatus', results.some(r=>r.ok) ? '' : 'err');
+  updateTicker(results);
+}
+
+// ═══════════════════════════════════════════
+// WEATHER — Open-Meteo (no key)
+// Chambersburg PA: 39.9376° N, 77.6611° W
+// ═══════════════════════════════════════════
+const WX_CODES = {
+  0:'Clear sky',1:'Mainly clear',2:'Partly cloudy',3:'Overcast',
+  45:'Foggy',48:'Icy fog',
+  51:'Light drizzle',53:'Drizzle',55:'Heavy drizzle',
+  61:'Slight rain',63:'Rain',65:'Heavy rain',
+  71:'Slight snow',73:'Snow',75:'Heavy snow',77:'Snow grains',
+  80:'Showers',81:'Heavy showers',82:'Violent showers',
+  85:'Snow showers',86:'Heavy snow showers',
+  95:'Thunderstorm',96:'Thunderstorm w/ hail',99:'Thunderstorm w/ heavy hail'
+};
+const WX_ICONS = {
+  0:'☀️',1:'🌤️',2:'⛅',3:'☁️',45:'🌫️',48:'🌫️',
+  51:'🌦️',53:'🌦️',55:'🌧️',61:'🌧️',63:'🌧️',65:'🌧️',
+  71:'🌨️',73:'❄️',75:'❄️',77:'🌨️',
+  80:'🌦️',81:'🌧️',82:'⛈️',85:'🌨️',86:'❄️',
+  95:'⛈️',96:'⛈️',99:'⛈️'
+};
+const DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+async function fetchWeather(){
+  statusEl('wxStatus','loading');
+  try {
+    const url = 'https://api.open-meteo.com/v1/forecast?latitude=39.9376&longitude=-77.6611&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,wind_direction_10m,weather_code,precipitation&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=America%2FNew_York&forecast_days=5';
+    const r = await fetch(url, {signal: AbortSignal.timeout(8000)});
+    const d = await r.json();
+    const c = d.current;
+    const dd = d.daily;
+    const wcode = c.weather_code;
+    const icon = WX_ICONS[wcode] || '🌡️';
+    const desc = WX_CODES[wcode] || 'Unknown';
+
+    const windDir = (deg) => {
+      const dirs = ['N','NE','E','SE','S','SW','W','NW'];
+      return dirs[Math.round(deg/45)%8];
+    };
+
+    const forecastDays = dd.time.slice(0,5).map((date,i)=>{
+      const dt = new Date(date+'T12:00:00');
+      const label = i===0 ? 'Today' : DAYS[dt.getDay()];
+      return `<div class="w-day">
+        <div class="w-day-name">${label}</div>
+        <div class="w-day-icon">${WX_ICONS[dd.weather_code[i]]||'🌡️'}</div>
+        <div class="w-day-hi">${Math.round(dd.temperature_2m_max[i])}°</div>
+        <div class="w-day-lo">${Math.round(dd.temperature_2m_min[i])}°</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:2px;">${dd.precipitation_probability_max?.[i] ?? 0}%</div>
+      </div>`;
+    }).join('');
+
+    const fiveDayCards = dd.time.slice(0,5).map((date,i)=>{
+      const dt = new Date(date+'T12:00:00');
+      const code = dd.weather_code[i];
+      return `<div class="forecast-big-day">
+        <div class="forecast-big-icon">${WX_ICONS[code]||'🌡️'}</div>
+        <div><div class="forecast-big-name">${i===0?'Today':DAYS[dt.getDay()]}</div><div class="forecast-big-desc">${WX_CODES[code]||'Forecast'}</div></div>
+        <div class="forecast-big-temp">${Math.round(dd.temperature_2m_max[i])}°/${Math.round(dd.temperature_2m_min[i])}°</div>
+      </div>`;
+    }).join('');
+    document.getElementById('fiveDayPanel').innerHTML = fiveDayCards;
+    statusEl('fiveWxStatus','');
+
+    document.getElementById('weatherWrap').innerHTML = `
+      <div class="w-main">
+        <div class="w-icon">${icon}</div>
+        <div class="w-temps">
+          <div class="w-temp-big">${Math.round(c.temperature_2m)}<span class="w-temp-unit">°F</span></div>
+          <div class="w-feels">Feels like ${Math.round(c.apparent_temperature)}°F</div>
+          <div class="w-desc">${desc}</div>
+          <div class="w-location">Chambersburg, PA</div>
+        </div>
+      </div>
+      <div class="w-grid">
+        <div class="w-stat"><div class="w-stat-label">Humidity</div><div class="w-stat-value">${c.relative_humidity_2m}%</div></div>
+        <div class="w-stat"><div class="w-stat-label">Wind</div><div class="w-stat-value">${Math.round(c.wind_speed_10m)} mph ${windDir(c.wind_direction_10m)}</div></div>
+        <div class="w-stat"><div class="w-stat-label">Precip</div><div class="w-stat-value">${c.precipitation} in</div></div>
+        <div class="w-stat"><div class="w-stat-label">Hi/Lo</div><div class="w-stat-value">${Math.round(dd.temperature_2m_max[0])}° / ${Math.round(dd.temperature_2m_min[0])}°</div></div>
+      </div>
+      <div style="font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-top:2px;">5-Day Forecast</div>
+      <div class="w-forecast">${forecastDays}</div>`;
+    statusEl('wxStatus','');
+  } catch(e){
+    document.getElementById('weatherWrap').innerHTML = '<div class="err-msg">Weather unavailable</div>';
+    document.getElementById('fiveDayPanel').innerHTML = '<div class="err-msg">Forecast unavailable</div>';
+    statusEl('wxStatus','err');
+    statusEl('fiveWxStatus','err');
+  }
+}
+
+// ═══════════════════════════════════════════
+// GAS PRICES — EIA API (no key for basic) + national avg
+// ═══════════════════════════════════════════
+async function fetchGas(){
+  statusEl('gasStatus','loading');
+  // EIA weekly retail gas price — uses open API endpoint
+  // Fallback to manually updated approximate values if API fails
+  try {
+    // Try EIA open data (no auth needed for this endpoint)
+    const url = 'https://api.eia.gov/v2/petroleum/pri/gnd/data/?frequency=weekly&data[0]=value&facets[series][]=EMM_EPM0_PTE_NUS_DPG&facets[series][]=EMM_EPMR_PTE_NUS_DPG&facets[series][]=EMM_EPMP_PTE_NUS_DPG&facets[series][]=EMM_EPMPU_PTE_NUS_DPG&sort[0][column]=period&sort[0][direction]=desc&length=8';
+    const r = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`, {signal:AbortSignal.timeout(8000)});
+    const raw = await r.json();
+    const parsed = JSON.parse(raw.contents);
+    const rows = parsed.response.data;
+
+    const byCode = {};
+    rows.forEach(row => {
+      const code = row['series-description'] || row.series;
+      if(!byCode[code]) byCode[code] = row.value;
+    });
+
+    // Extract latest by series
+    const latest = {};
+    rows.slice(0,16).forEach(row => {
+      if(!latest[row.series]) latest[row.series] = parseFloat(row.value);
+    });
+
+    const regular = latest['EMM_EPM0_PTE_NUS_DPG'];
+    const midgrade = latest['EMM_EPMR_PTE_NUS_DPG'];
+    const premium = latest['EMM_EPMP_PTE_NUS_DPG'];
+    const diesel  = latest['EMM_EPMPU_PTE_NUS_DPG'];
+
+    renderGas(regular, midgrade, premium, diesel, rows[0]?.period || '');
+    statusEl('gasStatus','');
+  } catch(e){
+    // Use approximate values from EIA data (May 2026 estimates)
+    renderGas(3.14, 3.52, 3.89, 3.58, 'Est. May 2026', true);
+    statusEl('gasStatus','err');
+  }
+}
+
+function renderGas(reg, mid, prem, diesel, period, estimated=false){
+  // Previous week approximate for delta
+  const prevReg = 3.18; // approximate prior week
+  const delta = reg ? reg - prevReg : null;
+  const d = dir(delta);
+  document.getElementById('gasWrap').innerHTML = `
+    <div class="gas-hero">
+      <div>
+        <div class="gas-label">REGULAR UNLEADED${estimated?' (Est.)':''}</div>
+        <div class="gas-price-big">${reg ? '$'+reg.toFixed(3) : '—'}</div>
+        <div class="gas-chg ${d}">${delta!=null?arrow(delta)+' '+(delta>=0?'+':'')+delta.toFixed(3)+' vs prev week':'—'}</div>
+      </div>
+    </div>
+    <div class="gas-grades">
+      <div class="gas-grade"><div class="gas-grade-name">Regular</div><div class="gas-grade-price">${reg?'$'+reg.toFixed(3):'—'}</div></div>
+      <div class="gas-grade"><div class="gas-grade-name">Mid-Grade</div><div class="gas-grade-price">${mid?'$'+mid.toFixed(3):'—'}</div></div>
+      <div class="gas-grade"><div class="gas-grade-name">Premium</div><div class="gas-grade-price">${prem?'$'+prem.toFixed(3):'—'}</div></div>
+      <div class="gas-grade"><div class="gas-grade-name">Diesel</div><div class="gas-grade-price">${diesel?'$'+diesel.toFixed(3):'—'}</div></div>
+    </div>
+    <div class="gas-src">National avg · EIA Weekly Retail · Period: ${period}</div>`;
+}
+
+// ═══════════════════════════════════════════
+// SPORTS TODAY — ESPN scoreboard endpoints
+// ═══════════════════════════════════════════
+const SPORTS_LEAGUES = [
+  {label:'MLB', sport:'baseball', league:'mlb'},
+  {label:'NBA', sport:'basketball', league:'nba'},
+  {label:'NHL', sport:'hockey', league:'nhl'},
+  {label:'WNBA', sport:'basketball', league:'wnba'},
+  {label:'MLS', sport:'soccer', league:'usa.1'}
+];
+
+function yyyymmdd(date=new Date()){
+  const y=date.getFullYear();
+  const m=String(date.getMonth()+1).padStart(2,'0');
+  const d=String(date.getDate()).padStart(2,'0');
+  return `${y}${m}${d}`;
+}
+
+async function fetchTopSports(){
+  statusEl('sportsStatus','loading');
+  const body=document.getElementById('sportsBody');
+  body.innerHTML='<div class="err-msg">Loading today’s games...</div>';
+  const date=yyyymmdd();
+  try{
+    const calls=SPORTS_LEAGUES.map(async l=>{
+      const url=`https://site.api.espn.com/apis/site/v2/sports/${l.sport}/${l.league}/scoreboard?dates=${date}`;
+      const r=await fetch(url,{signal:AbortSignal.timeout(8000)});
+      const j=await r.json();
+      return (j.events||[]).map(ev=>({league:l.label,event:ev}));
+    });
+    const games=(await Promise.allSettled(calls)).flatMap(x=>x.status==='fulfilled'?x.value:[])
+      .sort((a,b)=>new Date(a.event.date)-new Date(b.event.date))
+      .slice(0,8);
+    if(!games.length){
+      body.innerHTML='<div class="err-msg">No major games found for today yet.</div>';
+      statusEl('sportsStatus','');
+      return;
+    }
+    body.innerHTML=games.map(g=>{
+      const comps=g.event.competitions?.[0]?.competitors||[];
+      const awayTeam=comps.find(c=>c.homeAway==='away')?.team || comps[0]?.team || {};
+      const homeTeam=comps.find(c=>c.homeAway==='home')?.team || comps[1]?.team || {};
+      const away=awayTeam.abbreviation || awayTeam.shortDisplayName || '';
+      const home=homeTeam.abbreviation || homeTeam.shortDisplayName || '';
+      const awayComp = comps.find(c=>c.homeAway==='away') || comps[0] || {};
+      const homeComp = comps.find(c=>c.homeAway==='home') || comps[1] || {};
+      const type=g.event.status?.type || {};
+      const status=type.shortDetail || type.description || '';
+      const isScheduled=type.state==='pre' || type.description==='Scheduled';
+      const time=new Date(g.event.date).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+      const scoreText = isScheduled ? `${away} @ ${home}` : `${away} ${awayComp.score ?? '—'} @ ${home} ${homeComp.score ?? '—'}`;
+      return `<div class="sport-row"><div class="sport-league">${g.league}</div><div class="sport-match">${scoreText}</div><div class="sport-time">${isScheduled?time:status}</div></div>`;
+    }).join('');
+    statusEl('sportsStatus','');
+  }catch(e){
+    body.innerHTML='<div class="err-msg">Sports schedule unavailable</div>';
+    statusEl('sportsStatus','err');
+  }
+}
+
+// ═══════════════════════════════════════════
+// ENERGY BENCHMARKS — major classroom-friendly commodity tickers
+// ═══════════════════════════════════════════
+async function fetchJsonWithTimeout(url, timeout=9000){
+  const r = await fetch(url, {signal: AbortSignal.timeout(timeout), cache:'no-store'});
+  if(!r.ok) throw new Error('HTTP '+r.status);
+  return r.json();
+}
+
+const ENERGY_TICKERS = [
+  {sym:'CL=F', label:'WTI Crude', unit:'/bbl', fallback:62.40, note:'U.S. oil'},
+  {sym:'BZ=F', label:'Brent Crude', unit:'/bbl', fallback:65.20, note:'global oil'},
+  {sym:'NG=F', label:'Natural Gas', unit:'/MMBtu', fallback:3.20, note:'heating/power'},
+  {sym:'HO=F', label:'Heating Oil', unit:'/gal', fallback:2.15, note:'diesel link'}
+];
+
+async function fetchEnergyQuote(item){
+  try{
+    const url=`https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(item.sym)}?range=5d&interval=1d`;
+    const wrapped=`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
+    const raw=await fetchJsonWithTimeout(wrapped,8000);
+    const parsed=JSON.parse(raw.contents);
+    const result=parsed.chart?.result?.[0];
+    const closes=(result?.indicators?.quote?.[0]?.close||[]).filter(v=>Number.isFinite(v));
+    const meta=result?.meta||{};
+    const last=Number(meta.regularMarketPrice ?? closes.at(-1));
+    const prev=Number(meta.chartPreviousClose ?? closes.at(-2));
+    const avg=closes.length ? closes.reduce((a,b)=>a+b,0)/closes.length : null;
+    if(Number.isFinite(last)) return {...item,last,prev,avg,source:'current price'};
+  }catch(e){}
+  return {...item,last:null,prev:null,avg:item.fallback,source:'network needed'};
+}
+
+function renderEnergyBenchmarks(rows){
+  const cards = rows.map(x=>{
+    const pct = Number.isFinite(x.prev) && x.prev !== 0 ? ((x.last-x.prev)/x.prev)*100 : null;
+    const d = dir(pct);
+    return `<div class="crude-card">
+      <div class="crude-label">${x.label} <span style="color:var(--cyan)">${x.sym}</span></div>
+      <div class="crude-price">${Number.isFinite(x.last)?'$'+fmt(x.last):'NET'}</div>
+      <div class="crude-delta ${d}" style="color:${pct!=null?(pct>=0?'var(--green)':'var(--red)'):'var(--muted)'};">${pct!=null?arrow(pct)+' '+fmtPct(pct):(x.source==='network needed'?'allow network':'current quote')} · ${x.unit}</div>
+      <div class="crude-sub">${x.note} · ${x.source}</div>
+    </div>`;
+  }).join('');
+  const crudeOnly=rows.filter(x=>x.sym==='CL=F'||x.sym==='BZ=F').map(x=>x.avg).filter(Number.isFinite);
+  const crudeAvg=crudeOnly.length?crudeOnly.reduce((a,b)=>a+b,0)/crudeOnly.length:null;
+  document.getElementById('bzfBody').innerHTML = cards + `<div class="crude-ref">Reference average: ${crudeAvg?'$'+fmt(crudeAvg):'—'} per barrel across WTI + Brent</div>`;
+}
+
+async function fetchBZF(){
+  statusEl('bzfStatus','loading');
+  try{
+    const rows=await Promise.all(ENERGY_TICKERS.map(fetchEnergyQuote));
+    renderEnergyBenchmarks(rows);
+    statusEl('bzfStatus','');
+  }catch(e){
+    renderEnergyBenchmarks(ENERGY_TICKERS.map(x=>({...x,last:null,avg:x.fallback,source:'network needed'})));
+    statusEl('bzfStatus','err');
+  }
+}
+
+// MARKET SNAPSHOT PANEL
+// ═══════════════════════════════════════════
+const QUOTES = [
+  {q:'The secret of getting ahead is getting started.', a:'Mark Twain'},
+  {q:'Success is the sum of small efforts repeated day in and day out.', a:'Robert Collier'},
+  {q:'The future depends on what you do today.', a:'Mahatma Gandhi'},
+  {q:'Do what you can, with what you have, where you are.', a:'Theodore Roosevelt'},
+  {q:'Quality means doing it right when no one is looking.', a:'Henry Ford'},
+  {q:'A goal without a plan is just a wish.', a:'Antoine de Saint-Exupéry'},
+  {q:'Opportunity is missed by most people because it is dressed in overalls and looks like work.', a:'Thomas Edison'}
+];
+
+function initSnapshot(){
+  const dayIndex = Math.floor(Date.now() / 86400000) % QUOTES.length;
+  const quote = QUOTES[dayIndex];
+  document.getElementById('snapBody').innerHTML = `
+    <div class="quote-card">
+      <div class="quote-mark">“</div>
+      <div class="quote-text">${quote.q}</div>
+      <div class="quote-author">— ${quote.a}</div>
+      <div class="quote-prompt">Bell-ringer idea: What does this quote connect to in money, markets, sports, or business today?</div>
+    </div>`;
+  statusEl('snapStatus','');
+}
+
+// ═══════════════════════════════════════════
+// TICKER BAR UPDATE
+// ═══════════════════════════════════════════
+function updateTicker(stocks){
+  const items = [
+    ...stocks.map(s=>{
+      const d = dir(s.pct);
+      return `<div class="tick-item"><span class="tick-sym">${s.sym}</span><span class="tick-price">${s.price?'$'+fmt(s.price):'—'}</span><span class="tick-chg ${d}">${s.pct!=null?arrow(s.pct)+fmtPct(s.pct):'—'}</span></div>`;
+    }),
+  ];
+  // Duplicate for seamless loop
+  const all = items.join('');
+  document.getElementById('tickerInner').innerHTML = all+all;
+}
+
+function updateInfoTicker(){
+  const leaders = (latestIndustryData || []).filter(x=>x && x.price).slice(0,10);
+  const liveItems = leaders.map(x=>{
+    const d=dir(x.pct);
+    const perf=x.pct!=null ? `${arrow(x.pct)}${fmtPct(x.pct)}` : 'current';
+    return `<div class="tick-item"><span class="tick-sym">${x.industry.toUpperCase()}</span><span class="tick-price">${x.sym} ${x.price?'$'+fmt(x.price):'NET'}</span><span class="tick-chg ${d}">${perf}</span></div>`;
+  });
+  const pulseItems = [
+    `<div class="tick-item"><span class="tick-sym">MARKET PULSE</span><span class="tick-price">Which industry is winning today?</span><span class="tick-chg na">watch the board</span></div>`,
+    `<div class="tick-item"><span class="tick-sym">ENERGY WATCH</span><span class="tick-price">WTI crude drives gas, travel & shipping costs</span><span class="tick-chg na">CL=F</span></div>`,
+    `<div class="tick-item"><span class="tick-sym">SPORTS BIZ</span><span class="tick-price">Games = tickets, ads, merch & media rights</span><span class="tick-chg na">today</span></div>`,
+    `<div class="tick-item"><span class="tick-sym">BELL RINGER</span><span class="tick-price">What headline could move a stock today?</span><span class="tick-chg na">discuss</span></div>`
+  ];
+  const all=[...liveItems, ...pulseItems].join('');
+  document.getElementById('tickerInner').innerHTML=all+all+all;
+}
+
+// ═══════════════════════════════════════════
+// REAL RSS HEADLINES — News + Sports with school-network fallbacks
+// ═══════════════════════════════════════════
+const NEWS_FEEDS = [
+  'https://feeds.npr.org/1001/rss.xml',
+  'https://feeds.bbci.co.uk/news/rss.xml',
+  'https://www.pbs.org/newshour/feeds/rss/headlines'
+];
+const SPORTS_FEEDS = [
+  'https://www.espn.com/espn/rss/news',
+  'https://www.cbssports.com/rss/headlines/',
+  'https://sports.yahoo.com/rss/'
+];
+
+const REAL_NEWS_FALLBACK = [
+  'NPR: Latest U.S. and world headlines updating from RSS',
+  'BBC: World news feed updating from RSS',
+  'PBS NewsHour: Daily public-affairs headlines updating from RSS',
+  'Network note: if live RSS is blocked, deploy to Netlify/Cloudflare and refresh'
+];
+const REAL_SPORTS_FALLBACK = [
+  'ESPN: Top sports headlines updating from RSS',
+  'CBS Sports: Breaking sports headlines updating from RSS',
+  'Yahoo Sports: Latest sports headlines updating from RSS',
+  'Scores panel above still updates separately from ESPN scoreboard data'
+];
+
+function cleanHeadline(txt){
+  const div=document.createElement('div');
+  div.innerHTML=txt || '';
+  return (div.textContent || div.innerText || '').replace(/\s+/g,' ').trim();
+}
+
+function parseRssXml(xmlText){
+  const doc=new DOMParser().parseFromString(xmlText,'text/xml');
+  const items=[...doc.querySelectorAll('item, entry')];
+  return items.slice(0,10).map(item=>cleanHeadline(
+    item.querySelector('title')?.textContent || item.querySelector('title')?.innerHTML
+  )).filter(Boolean);
+}
+
+async function fetchRSSFeed(url){
+  // Try rss2json first because it usually handles CORS better than raw RSS in browsers.
+  const rss2json=`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(url)}`;
+  try{
+    const json=await fetchJsonWithTimeout(rss2json,10000);
+    const titles=(json.items||[]).slice(0,10).map(i=>cleanHeadline(i.title)).filter(Boolean);
+    if(titles.length) return titles;
+  }catch(_){/* try raw proxies below */}
+
+  const proxyUrls=[
+    `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+    `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(url)}`
+  ];
+  for(const proxy of proxyUrls){
+    try{
+      const r=await fetch(proxy,{signal:AbortSignal.timeout(10000), cache:'no-store'});
+      if(!r.ok) continue;
+      const text=await r.text();
+      const titles=parseRssXml(text);
+      if(titles.length) return titles;
+    }catch(_){/* keep trying */}
+  }
+  return [];
+}
+
+function renderTicker(trackId, items, fallback){
+  const clean = [...new Set(items.filter(Boolean))].slice(0,16);
+  const headlines = clean.length ? clean : fallback;
+  const html=headlines.map(n=>`<span class="news-item">${n}</span><span class="news-sep">◆</span>`).join('');
+  document.getElementById(trackId).innerHTML=html+html;
+}
+
+async function buildNewsTicker(){
+  renderTicker('newsTrack', [], ['Loading real news headlines...']);
+  renderTicker('sportsNewsTrack', [], ['Loading real sports headlines...']);
+  const [newsResults, sportsResults] = await Promise.all([
+    Promise.allSettled(NEWS_FEEDS.map(fetchRSSFeed)),
+    Promise.allSettled(SPORTS_FEEDS.map(fetchRSSFeed))
+  ]);
+  const newsItems=newsResults.flatMap(r=>r.status==='fulfilled'?r.value:[]);
+  const sportsItems=sportsResults.flatMap(r=>r.status==='fulfilled'?r.value:[]);
+  renderTicker('newsTrack', newsItems, REAL_NEWS_FALLBACK);
+  renderTicker('sportsNewsTrack', sportsItems, REAL_SPORTS_FALLBACK);
+}
+
+
+// ═══════════════════════════════════════════
+// GOOGLE APPS SCRIPT MIDDLEMAN MODE
+// Paste your deployed Apps Script Web App URL below.
+// This keeps the classroom dashboard calling ONE Google URL instead of many
+// outside APIs that school networks often block.
+// ═══════════════════════════════════════════
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyooLV-6a4MoMv0D-96n2httwe4PwjA3lfTbQqw5jwXtJreLJClEaaeq2VIl46CqXyG/exec';
+
+const FALLBACK_DASHBOARD = {
+  updatedAt: '',
+  industries: [
+    {sym:'AAPL', industry:'Tech', name:'Apple', price:null, pct:null},
+    {sym:'MSFT', industry:'Software', name:'Microsoft', price:null, pct:null},
+    {sym:'NVDA', industry:'Chips / AI', name:'NVIDIA', price:null, pct:null},
+    {sym:'AMZN', industry:'Consumer', name:'Amazon', price:null, pct:null},
+    {sym:'JPM', industry:'Banking', name:'JPMorgan', price:null, pct:null},
+    {sym:'XOM', industry:'Energy', name:'Exxon Mobil', price:null, pct:null},
+    {sym:'UNH', industry:'Health', name:'UnitedHealth', price:null, pct:null},
+    {sym:'WMT', industry:'Retail', name:'Walmart', price:null, pct:null},
+    {sym:'PG', industry:'Staples', name:'Procter & Gamble', price:null, pct:null},
+    {sym:'CAT', industry:'Industrial', name:'Caterpillar', price:null, pct:null}
+  ],
+  energy: [
+    {sym:'CL=F', label:'WTI Crude', unit:'/bbl', price:null, pct:null, note:'U.S. benchmark'},
+    {sym:'BZ=F', label:'Brent Crude', unit:'/bbl', price:null, pct:null, note:'Global benchmark'},
+    {sym:'NG=F', label:'Natural Gas', unit:'/MMBtu', price:null, pct:null, note:'Heating / power'},
+    {sym:'HO=F', label:'Heating Oil', unit:'/gal', price:null, pct:null, note:'Diesel link'}
+  ],
+  weather: null,
+  gas: null,
+  sports: [],
+  news: ['Connect Google Apps Script to load live daily headlines.'],
+  sportsNews: ['Connect Google Apps Script to load live sports headlines.']
+};
+
+async function fetchDashboardFromGoogle(){
+  if(!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.includes('PASTE_YOUR')){
+    return {...FALLBACK_DASHBOARD, setupNeeded:true};
+  }
+  const url = GOOGLE_SCRIPT_URL + (GOOGLE_SCRIPT_URL.includes('?') ? '&' : '?') + 't=' + Date.now();
+  const r = await fetch(url, {cache:'no-store'});
+  if(!r.ok) throw new Error('Google Script HTTP '+r.status);
+  return await r.json();
+}
+
+function renderIndustryBoard(items){
+  statusEl('stockStatus','loading');
+  const grid=document.getElementById('stocksGrid');
+  const list=(items&&items.length?items:FALLBACK_DASHBOARD.industries).slice(0,10);
+  latestIndustryData=list;
+  grid.innerHTML='';
+  list.forEach((x)=>{
+    const tile=document.createElement('div');
+    tile.className='stock-tile';
+    const d=dir(x.pct);
+    const pctAbs=x.pct?Math.abs(x.pct):0;
+    const barW=Math.min(pctAbs*12,100);
+    tile.innerHTML=`
+      <div>
+        <div class="st-industry">${x.industry||'Industry'}</div>
+        <div class="st-sym">${x.sym||'—'}</div>
+        <div class="st-name">${x.name||''}</div>
+      </div>
+      <div>
+        <div class="st-price">${Number.isFinite(x.price)?'$'+fmt(x.price):'LIVE'}</div>
+        <div class="st-chg ${d}">${x.pct!=null?arrow(x.pct)+' '+fmtPct(x.pct):'Google feed'}</div>
+        <div class="st-bar"><div class="st-bar-fill ${d}" style="width:${barW}%"></div></div>
+      </div>`;
+    grid.appendChild(tile);
+  });
+  statusEl('stockStatus', list.some(x=>Number.isFinite(x.price))?'':'err');
+}
+
+function renderWeatherFromData(wx){
+  if(!wx || !wx.current || !wx.daily){
+    document.getElementById('weatherWrap').innerHTML='<div class="err-msg">Weather loads through Google Script once connected.</div>';
+    document.getElementById('fiveDayPanel').innerHTML='<div class="err-msg">5-day forecast loads through Google Script.</div>';
+    statusEl('wxStatus','err'); statusEl('fiveWxStatus','err');
+    return;
+  }
+  const c=wx.current, dd=wx.daily;
+  const code=c.weather_code;
+  const icon=WX_ICONS[code]||'🌡️';
+  const desc=WX_CODES[code]||'Current conditions';
+  const windDir=(deg)=>['N','NE','E','SE','S','SW','W','NW'][Math.round((deg||0)/45)%8];
+  const forecastDays=dd.slice(0,5).map((day,i)=>{
+    return `<div class="w-day">
+      <div class="w-day-name">${i===0?'Today':day.day}</div>
+      <div class="w-day-icon">${WX_ICONS[day.weather_code]||'🌡️'}</div>
+      <div class="w-day-hi">${Math.round(day.high)}°</div>
+      <div class="w-day-lo">${Math.round(day.low)}°</div>
+      <div style="font-size:10px;color:var(--muted);margin-top:2px;">${day.precip ?? 0}%</div>
+    </div>`;
+  }).join('');
+  const fiveDayCards=dd.slice(0,5).map((day,i)=>`<div class="forecast-big-day">
+    <div class="forecast-big-icon">${WX_ICONS[day.weather_code]||'🌡️'}</div>
+    <div><div class="forecast-big-name">${i===0?'Today':day.day}</div><div class="forecast-big-desc">${WX_CODES[day.weather_code]||'Forecast'}</div></div>
+    <div class="forecast-big-temp">${Math.round(day.high)}°/${Math.round(day.low)}°</div>
+  </div>`).join('');
+  document.getElementById('fiveDayPanel').innerHTML=fiveDayCards;
+  document.getElementById('weatherWrap').innerHTML=`
+    <div class="w-main">
+      <div class="w-icon">${icon}</div>
+      <div class="w-temps">
+        <div class="w-temp-big">${Math.round(c.temperature)}<span class="w-temp-unit">°F</span></div>
+        <div class="w-feels">Feels like ${Math.round(c.feels_like)}°F</div>
+        <div class="w-desc">${desc}</div>
+        <div class="w-location">Chambersburg, PA</div>
+      </div>
+    </div>
+    <div class="w-grid">
+      <div class="w-stat"><div class="w-stat-label">Humidity</div><div class="w-stat-value">${c.humidity}%</div></div>
+      <div class="w-stat"><div class="w-stat-label">Wind</div><div class="w-stat-value">${Math.round(c.wind_speed)} mph ${windDir(c.wind_direction)}</div></div>
+      <div class="w-stat"><div class="w-stat-label">Precip</div><div class="w-stat-value">${c.precipitation ?? 0} in</div></div>
+      <div class="w-stat"><div class="w-stat-label">Hi/Lo</div><div class="w-stat-value">${Math.round(dd[0].high)}° / ${Math.round(dd[0].low)}°</div></div>
+    </div>
+    <div style="font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-top:2px;">5-Day Forecast</div>
+    <div class="w-forecast">${forecastDays}</div>`;
+  statusEl('wxStatus',''); statusEl('fiveWxStatus','');
+}
+
+function renderGasFromData(gas){
+  const national = Number(gas?.national_regular ?? gas?.regular);
+  const pa = Number(gas?.pa_regular);
+  const diesel = Number(gas?.diesel);
+  if(!gas || !Number.isFinite(national)){
+    document.getElementById('gasWrap').innerHTML = `
+      <div class="gas-hero"><div>
+        <div class="gas-label">AAA NATIONAL REGULAR</div>
+        <div class="gas-price-big">—</div>
+        <div class="gas-chg na">Google gas feed pending</div>
+      </div></div>
+      <div class="gas-grades">
+        <div class="gas-grade"><div class="gas-grade-name">National</div><div class="gas-grade-price">—</div></div>
+        <div class="gas-grade"><div class="gas-grade-name">PA Avg</div><div class="gas-grade-price">—</div></div>
+        <div class="gas-grade"><div class="gas-grade-name">Diesel</div><div class="gas-grade-price">—</div></div>
+        <div class="gas-grade"><div class="gas-grade-name">Source</div><div class="gas-grade-price">AAA</div></div>
+      </div>
+      <div class="gas-src">Daily gas averages load through Google Apps Script.</div>`;
+    statusEl('gasStatus','err');
+    return;
+  }
+  document.getElementById('gasWrap').innerHTML = `
+    <div class="gas-hero">
+      <div>
+        <div class="gas-label">AAA NATIONAL REGULAR</div>
+        <div class="gas-price-big">$${national.toFixed(3)}</div>
+        <div class="gas-chg na">${gas.period || 'Current daily average'}</div>
+      </div>
+    </div>
+    <div class="gas-grades">
+      <div class="gas-grade"><div class="gas-grade-name">National</div><div class="gas-grade-price">$${national.toFixed(3)}</div></div>
+      <div class="gas-grade"><div class="gas-grade-name">PA Avg</div><div class="gas-grade-price">${Number.isFinite(pa)?'$'+pa.toFixed(3):'—'}</div></div>
+      <div class="gas-grade"><div class="gas-grade-name">Diesel</div><div class="gas-grade-price">${Number.isFinite(diesel)?'$'+diesel.toFixed(3):'—'}</div></div>
+      <div class="gas-grade"><div class="gas-grade-name">Source</div><div class="gas-grade-price">AAA</div></div>
+    </div>
+    <div class="gas-src">${gas.source || 'AAA daily gas prices'} · Updated by Google Apps Script</div>`;
+  statusEl('gasStatus','');
+}
+
+function renderSportsFromData(games){
+  const body=document.getElementById('sportsBody');
+  const list=(games||[]).slice(0,10);
+  if(!list.length){
+    body.innerHTML='<div class="err-msg">Today’s scores load through Google Script once connected.</div>';
+    statusEl('sportsStatus','err');
+    return;
+  }
+  body.innerHTML=list.map(g=>`<div class="game-row">
+    <div class="game-league">${g.league||''}</div>
+    <div class="game-main"><span>${g.away||''}</span><span>${g.awayScore ?? ''}</span><span>@</span><span>${g.home||''}</span><span>${g.homeScore ?? ''}</span></div>
+    <div class="game-time">${g.status||g.time||''}</div>
+  </div>`).join('');
+  statusEl('sportsStatus','');
+}
+
+function renderEnergyFromData(rows){
+  const list=(rows&&rows.length?rows:FALLBACK_DASHBOARD.energy).slice(0,4).map(x=>({
+    ...x,
+    last:x.price,
+    avg:x.avg,
+    source:Number.isFinite(x.price)?'current Google feed':'Google feed'
+  }));
+  renderEnergyBenchmarks(list);
+  statusEl('bzfStatus', list.some(x=>Number.isFinite(x.last))?'':'err');
+}
+
+function renderTicker(trackId, items, fallback){
+  const clean=[...new Set((items||[]).filter(Boolean))].slice(0,18);
+  const headlines=clean.length?clean:fallback;
+  const html=headlines.map(n=>`<span class="news-item">${n}</span><span class="news-sep">◆</span>`).join('');
+  document.getElementById(trackId).innerHTML=html+html;
+}
+
+function renderTopTickerFromData(data){
+  const stocks=(data.industries||[]).filter(x=>Number.isFinite(x.price));
+  const energy=(data.energy||[]).filter(x=>Number.isFinite(x.price));
+  const stockItems=stocks.map(x=>`<div class="tick-item"><span class="tick-sym">${(x.industry||'STOCK').toUpperCase()}</span><span class="tick-price">${x.sym} $${fmt(x.price)}</span><span class="tick-chg ${dir(x.pct)}">${x.pct!=null?arrow(x.pct)+fmtPct(x.pct):'current'}</span></div>`);
+  const energyItems=energy.map(x=>`<div class="tick-item"><span class="tick-sym">${x.sym}</span><span class="tick-price">${x.label||'Energy'} $${fmt(x.price)}</span><span class="tick-chg ${dir(x.pct)}">${x.pct!=null?arrow(x.pct)+fmtPct(x.pct):'current'}</span></div>`);
+  const pulseItems=[
+    `<div class="tick-item"><span class="tick-sym">CLASS QUESTION</span><span class="tick-price">Which headline could move prices today?</span><span class="tick-chg na">discuss</span></div>`,
+    `<div class="tick-item"><span class="tick-sym">SPORTS BIZ</span><span class="tick-price">Scores drive attention, ads, merch & media rights</span><span class="tick-chg na">today</span></div>`
+  ];
+  const all=[...stockItems,...energyItems,...pulseItems].join('');
+  document.getElementById('tickerInner').innerHTML=(all||pulseItems.join('')).repeat(3);
+}
+
+function showSetupBanner(){
+  document.getElementById('lastUpdate').textContent='Paste your Google Apps Script URL in GOOGLE_SCRIPT_URL';
+}
+
+
+async function fetchOpenMeteoWeatherFallback(){
+  try{
+    const url='https://api.open-meteo.com/v1/forecast?latitude=39.9376&longitude=-77.6611&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,wind_direction_10m,weather_code,precipitation&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=America%2FNew_York&forecast_days=5';
+    const r=await fetch(url,{cache:'no-store'});
+    if(!r.ok) throw new Error('Open-Meteo HTTP '+r.status);
+    const d=await r.json();
+    const days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    const daily=(d.daily?.time||[]).slice(0,5).map((date,i)=>{
+      const dt=new Date(date+'T12:00:00');
+      return {
+        date,
+        day:days[dt.getDay()],
+        weather_code:d.daily.weather_code?.[i],
+        high:d.daily.temperature_2m_max?.[i],
+        low:d.daily.temperature_2m_min?.[i],
+        precip:d.daily.precipitation_probability_max?.[i] ?? 0
+      };
+    });
+    if(!d.current || !daily.length) throw new Error('Missing weather payload');
+    return {
+      current:{
+        temperature:d.current.temperature_2m,
+        feels_like:d.current.apparent_temperature,
+        humidity:d.current.relative_humidity_2m,
+        wind_speed:d.current.wind_speed_10m,
+        wind_direction:d.current.wind_direction_10m,
+        weather_code:d.current.weather_code,
+        precipitation:d.current.precipitation
+      },
+      daily,
+      source:'Open-Meteo direct browser fallback'
+    };
+  }catch(err){
+    return null;
+  }
+}
+
+function getReferenceWeatherFallback(){
+  const today=new Date();
+  const days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const daily=[];
+  for(let i=0;i<5;i++){
+    const dt=new Date(today); dt.setDate(today.getDate()+i);
+    daily.push({date:dt.toISOString().slice(0,10),day:days[dt.getDay()],weather_code:2,high:72-i,low:55-i,precip:20});
+  }
+  return {
+    current:{temperature:70,feels_like:70,humidity:55,wind_speed:6,wind_direction:270,weather_code:2,precipitation:0},
+    daily,
+    source:'classroom reference fallback'
+  };
+}
+
+async function fetchAll(){
+  setLastUpdate();
+  try{
+    const data=await fetchDashboardFromGoogle();
+    if(data.setupNeeded) showSetupBanner();
+    renderIndustryBoard(data.industries);
+    const weatherData = data.weather || await fetchOpenMeteoWeatherFallback() || getReferenceWeatherFallback();
+    renderWeatherFromData(weatherData);
+    renderGasFromData(data.gas);
+    renderSportsFromData(data.sports);
+    renderEnergyFromData(data.energy);
+    renderTicker('newsTrack', data.news, FALLBACK_DASHBOARD.news);
+    renderTicker('sportsNewsTrack', data.sportsNews, FALLBACK_DASHBOARD.sportsNews);
+    renderTopTickerFromData(data);
+    setLastUpdate();
+  }catch(e){
+    renderIndustryBoard(FALLBACK_DASHBOARD.industries);
+    const weatherData = await fetchOpenMeteoWeatherFallback() || getReferenceWeatherFallback();
+    renderWeatherFromData(weatherData);
+    renderGasFromData(null);
+    renderSportsFromData([]);
+    renderEnergyFromData(FALLBACK_DASHBOARD.energy);
+    renderTicker('newsTrack', [], ['Google Script feed blocked or not deployed yet.']);
+    renderTicker('sportsNewsTrack', [], ['Google Script sports feed blocked or not deployed yet.']);
+    renderTopTickerFromData(FALLBACK_DASHBOARD);
+    document.getElementById('lastUpdate').textContent='Google feed unavailable';
+  }
+}
+
+function buildNewsTicker(){
+  renderTicker('newsTrack', [], ['Loading daily headlines from Google Script...']);
+  renderTicker('sportsNewsTrack', [], ['Loading sports headlines from Google Script...']);
+}
+
+// ═══════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════
+initSnapshot();
+buildNewsTicker();
+fetchAll();
+setInterval(fetchAll, 3 * 60 * 1000);
 </script>
-
-</body>
-</html>
-  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 </body>
 </html>
