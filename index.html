@@ -649,58 +649,73 @@
     </div>
   </div>
 
-  <script>
-    const modal = document.getElementById('gateModal');
-    const modalTitle = document.getElementById('modalTitle');
-    const successBox = document.getElementById('successBox');
-    let selectedCourse = '';
+ <script>
+  const modal = document.getElementById('gateModal');
+  const modalTitle = document.getElementById('modalTitle');
+  const successBox = document.getElementById('successBox');
+  const passwordInput = document.getElementById('coursePassword');
 
-    const courseLinks = {
-      'AP Business with Personal Finance': 'ap-business.html',
-      'Marketing Fundamentals': 'marketing-fundamentals.html',
-      'Personal Financial Management': 'personal-financial-management.html',
-      'Business 101': 'business-101.html'
-    };
+  let selectedCourse = '';
 
-    document.getElementById('year').textContent = new Date().getFullYear();
+  const courseLinks = {
+    'AP Business with Personal Finance': 'ap-business/',
+    'Marketing Fundamentals': 'marketing/',
+    'Personal Financial Management': 'pfm/',
+    'Business 101': 'business-101/'
+  };
 
-    function openGate(courseName) {
-      selectedCourse = courseName;
-      modalTitle.textContent = courseName + ' Access';
-      successBox.style.display = 'none';
-      document.getElementById('coursePassword').value = '';
-      modal.classList.add('active');
-      modal.setAttribute('aria-hidden', 'false');
-      setTimeout(() => document.getElementById('coursePassword').focus(), 100);
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  function openGate(courseName) {
+    selectedCourse = courseName;
+    modalTitle.textContent = courseName + ' Access';
+    successBox.style.display = 'none';
+    passwordInput.value = '';
+    modal.classList.add('active');
+    modal.setAttribute('aria-hidden', 'false');
+    setTimeout(() => passwordInput.focus(), 100);
+  }
+
+  function closeGate() {
+    modal.classList.remove('active');
+    modal.setAttribute('aria-hidden', 'true');
+  }
+
+  function demoUnlock() {
+    const password = passwordInput.value.trim().toLowerCase();
+
+    if (password === 'cashs') {
+      successBox.style.display = 'block';
+      successBox.textContent = 'Access granted. Opening your class portal...';
+
+      const targetPage = courseLinks[selectedCourse];
+
+      setTimeout(() => {
+        if (targetPage) {
+          window.location.href = targetPage;
+        } else {
+          alert('Class page link is missing. Check the courseLinks list in the code.');
+        }
+      }, 700);
+
+    } else {
+      alert('Incorrect class password.');
     }
+  }
 
-    function closeGate() {
-      modal.classList.remove('active');
-      modal.setAttribute('aria-hidden', 'true');
+  passwordInput.addEventListener('keydown', function(event) {
+    if (event.key === 'Enter') {
+      demoUnlock();
     }
+  });
 
-    function demoUnlock() {
-      const password = document.getElementById('coursePassword').value.trim().toLowerCase();
+  modal.addEventListener('click', event => {
+    if (event.target === modal) closeGate();
+  });
 
-      if (password === 'cashs') {
-        successBox.style.display = 'block';
-
-        setTimeout(() => {
-          window.location.href = courseLinks[selectedCourse] || 'index.html';
-        }, 600);
-
-      } else {
-        alert('Incorrect class password.');
-      }
-    }
-
-    modal.addEventListener('click', event => {
-      if (event.target === modal) closeGate();
-    });
-
-    document.addEventListener('keydown', event => {
-      if (event.key === 'Escape') closeGate();
-    });
-  </script>
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape') closeGate();
+  });
+</script>
 </body>
 </html>
