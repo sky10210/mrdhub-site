@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Mr. D's Student Portal | Mr. D's Hub</title>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -13,7 +14,6 @@
       --bg: #1C1917;
       --bg-deep: #0F0E0D;
       --card: rgba(41, 37, 36, 0.76);
-      --card-strong: rgba(41, 37, 36, 0.92);
       --text: #FAF7F2;
       --muted: rgba(250, 247, 242, 0.74);
       --soft: rgba(250, 247, 242, 0.58);
@@ -204,10 +204,15 @@
       border: 1px solid var(--line);
     }
 
+    .btn-bell {
+      color: #11100F;
+      background: linear-gradient(135deg, #FDE68A, #F59E0B);
+      box-shadow: 0 18px 46px rgba(245,158,11,.18);
+    }
+
     .quick-strip {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 0;
       max-width: 980px;
       margin: 28px auto 18px;
       overflow: hidden;
@@ -225,15 +230,6 @@
     }
 
     .quick-item:last-child { border-right: 0; }
-
-    .quick-item::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(circle at 50% 0%, rgba(96,165,250,.12), transparent 54%);
-      opacity: .9;
-      pointer-events: none;
-    }
 
     .quick-item strong,
     .quick-item span {
@@ -267,24 +263,6 @@
       font-weight: 700;
       letter-spacing: .22em;
       text-transform: uppercase;
-    }
-
-    .student-launch {
-      display: flex;
-      justify-content: center;
-      margin-top: 18px;
-    }
-
-    .btn-menti {
-      color: var(--text);
-      background: rgba(96,165,250,.14);
-      border: 1px solid rgba(96,165,250,.34);
-      box-shadow: 0 16px 38px rgba(96,165,250,.18);
-    }
-
-    .btn-menti:hover {
-      background: rgba(96,165,250,.22);
-      box-shadow: 0 0 28px rgba(96,165,250,.16);
     }
 
     section { padding: 38px 0; }
@@ -332,26 +310,13 @@
       transition: .25s ease;
     }
 
-    .course-card::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(circle at top left, rgba(96,165,250,.11), transparent 46%);
-      opacity: 0;
-      transition: opacity .25s ease;
-      pointer-events: none;
-    }
-
     .course-card:hover {
       transform: translateY(-6px);
       border-color: var(--line-gold);
       box-shadow: 0 0 34px rgba(96,165,250,.11), 0 30px 70px rgba(0,0,0,.34);
     }
 
-    .course-card:hover::before { opacity: 1; }
-
     .course-icon {
-      position: relative;
       width: 54px;
       height: 54px;
       display: grid;
@@ -366,7 +331,6 @@
     }
 
     .course-card h3 {
-      position: relative;
       font-size: 1.16rem;
       line-height: 1.16;
       letter-spacing: -.045em;
@@ -376,7 +340,6 @@
 
     .course-card p,
     .spotlight-card p {
-      position: relative;
       color: var(--muted);
       line-height: 1.55;
       font-size: .91rem;
@@ -384,7 +347,6 @@
     }
 
     .tag-list {
-      position: relative;
       display: flex;
       flex-wrap: wrap;
       gap: 7px;
@@ -560,16 +522,17 @@
 <body>
   <header class="topbar">
     <nav class="shell nav">
-      <a href="index.html" class="brand" aria-label="Mr. D's Hub home">
+      <a href="/" class="brand" aria-label="Mr. D's Hub home">
         <div class="brand-mark">D</div>
         <div class="brand-text">Mr. D's Hub <span>mrdhub.com</span></div>
       </a>
 
       <div class="navlinks">
         <a href="#courses">Classes</a>
-        <a href="business-dashboard.html">Business Dashboard</a>
+        <a href="/opening-bell.html">Opening Bell</a>
+        <a href="/business-dashboard.html">Business Dashboard</a>
         <a href="#student-tools">Student Tools</a>
-        <a href="about-contact.html">About Me / Contact</a>
+        <a href="/about-contact.html">About Me / Contact</a>
       </div>
     </nav>
   </header>
@@ -581,7 +544,8 @@
 
       <div class="hero-actions">
         <a class="btn btn-primary" href="#courses">Choose Your Class →</a>
-        <a class="btn btn-secondary" href="business-dashboard.html">Business Dashboard</a>
+        <a class="btn btn-bell" href="/opening-bell.html">Opening Bell →</a>
+        <a class="btn btn-secondary" href="/business-dashboard.html">Business Dashboard →</a>
       </div>
 
       <div class="quick-strip">
@@ -590,20 +554,16 @@
           <span>Access class modules and resources</span>
         </div>
         <div class="quick-item">
-          <strong>Business Info</strong>
-          <span>Current events, markets, and data</span>
+          <strong>Opening Bell</strong>
+          <span>Start class with bell ringers and daily prompts</span>
         </div>
         <div class="quick-item">
-          <strong>Mentimeter</strong>
-          <span>Join live class questions and activities</span>
+          <strong>Business Dashboard</strong>
+          <span>Current events, markets, weather, and sports data</span>
         </div>
       </div>
 
       <div class="district-line">Chambersburg Area School District</div>
-
-      <div class="student-launch">
-        <a class="btn btn-menti" href="https://www.mentimeter.com/" target="_blank" rel="noopener">Mentimeter →</a>
-      </div>
     </section>
 
     <section class="shell" id="courses">
@@ -622,7 +582,7 @@
             <span class="tag">Finance</span>
             <span class="tag">Case Studies</span>
           </div>
-          <button class="btn locked" onclick="openGate('AP Business with Personal Finance')">Enter Class <span>→</span></button>
+          <button class="btn locked" data-target="/ap-business/">Enter Class <span>→</span></button>
         </article>
 
         <article class="course-card">
@@ -634,7 +594,7 @@
             <span class="tag">Sports MKT</span>
             <span class="tag">Ads</span>
           </div>
-          <button class="btn locked" onclick="openGate('Marketing Fundamentals')">Enter Class <span>→</span></button>
+          <button class="btn locked" data-target="/marketing/">Enter Class <span>→</span></button>
         </article>
 
         <article class="course-card">
@@ -646,7 +606,7 @@
             <span class="tag">Credit</span>
             <span class="tag">Insurance</span>
           </div>
-          <button class="btn locked" onclick="openGate('Personal Financial Management')">Enter Class <span>→</span></button>
+          <button class="btn locked" data-target="/pfm/">Enter Class <span>→</span></button>
         </article>
 
         <article class="course-card">
@@ -658,7 +618,7 @@
             <span class="tag">Econ</span>
             <span class="tag">Startups</span>
           </div>
-          <button class="btn locked" onclick="openGate('Business 101')">Enter Class <span>→</span></button>
+          <button class="btn locked" data-target="/business-101/">Enter Class <span>→</span></button>
         </article>
       </div>
     </section>
@@ -681,8 +641,8 @@
         </article>
 
         <article class="spotlight-card">
-          <h3>Complete and submit</h3>
-          <p>When a module asks for your name, class period, score, or reflection, make sure everything is entered accurately before submitting.</p>
+          <h3>Use daily tools</h3>
+          <p>Use Opening Bell for class starters and the Business Dashboard for live current-event and market connections.</p>
         </article>
       </div>
     </section>
@@ -702,12 +662,12 @@
           <h3 id="modalTitle">Class Access</h3>
           <p class="caption">Enter the class password to access your course portal.</p>
         </div>
-        <button class="x" onclick="closeGate()" aria-label="Close">×</button>
+        <button class="x" id="closeModal" aria-label="Close">×</button>
       </div>
 
       <div class="portal-login">
         <input id="coursePassword" type="password" placeholder="Enter Class Password" />
-        <button class="btn btn-primary" onclick="demoUnlock()">Continue</button>
+        <button class="btn btn-primary" id="continueButton">Continue</button>
       </div>
 
       <p class="tiny-note">Use the password given in class. See Mr. D if you are having trouble accessing your course page.</p>
@@ -716,72 +676,70 @@
   </div>
 
   <script>
-    const modal = document.getElementById('gateModal');
-    const modalTitle = document.getElementById('modalTitle');
-    const successBox = document.getElementById('successBox');
-    const passwordInput = document.getElementById('coursePassword');
+    const CLASS_PASSWORD = "cashs";
 
-    let selectedCourse = '';
+    const modal = document.getElementById("gateModal");
+    const modalTitle = document.getElementById("modalTitle");
+    const passwordInput = document.getElementById("coursePassword");
+    const successBox = document.getElementById("successBox");
+    const continueButton = document.getElementById("continueButton");
+    const closeModalButton = document.getElementById("closeModal");
 
-    const courseLinks = {
-      'AP Business with Personal Finance': 'ap-business/',
-      'Marketing Fundamentals': 'marketing/',
-      'Personal Financial Management': 'pfm/',
-      'Business 101': 'business-101/'
-    };
+    let targetUrl = "";
 
-    document.getElementById('year').textContent = new Date().getFullYear();
+    document.getElementById("year").textContent = new Date().getFullYear();
 
-    function openGate(courseName) {
-      selectedCourse = courseName;
-      modalTitle.textContent = courseName + ' Access';
-      successBox.style.display = 'none';
-      successBox.textContent = 'Access granted. Opening your class portal...';
-      passwordInput.value = '';
-      modal.classList.add('active');
-      modal.setAttribute('aria-hidden', 'false');
-      setTimeout(() => passwordInput.focus(), 100);
-    }
+    document.querySelectorAll("[data-target]").forEach(button => {
+      button.addEventListener("click", () => {
+        targetUrl = button.getAttribute("data-target");
+        const courseTitle = button.closest(".course-card").querySelector("h3").textContent;
+        modalTitle.textContent = courseTitle + " Access";
+        passwordInput.value = "";
+        successBox.style.display = "none";
+        modal.classList.add("active");
+        modal.setAttribute("aria-hidden", "false");
+        setTimeout(() => passwordInput.focus(), 100);
+      });
+    });
 
     function closeGate() {
-      modal.classList.remove('active');
-      modal.setAttribute('aria-hidden', 'true');
+      modal.classList.remove("active");
+      modal.setAttribute("aria-hidden", "true");
     }
 
-    function demoUnlock() {
-      const password = passwordInput.value.trim().toLowerCase();
+    function unlockCourse() {
+      const enteredPassword = passwordInput.value.trim().toLowerCase();
 
-      if (password === 'cashs') {
-        const targetPage = courseLinks[selectedCourse];
-
-        if (!targetPage) {
-          alert('Class page link is missing.');
-          return;
-        }
-
-        successBox.style.display = 'block';
-
+      if (enteredPassword === CLASS_PASSWORD) {
+        successBox.style.display = "block";
         setTimeout(() => {
-          window.location.href = targetPage;
-        }, 650);
-
+          window.location.href = targetUrl;
+        }, 500);
       } else {
-        alert('Incorrect class password.');
+        alert("Incorrect class password.");
       }
     }
 
-    passwordInput.addEventListener('keydown', function(event) {
-      if (event.key === 'Enter') {
-        demoUnlock();
+    continueButton.addEventListener("click", unlockCourse);
+
+    passwordInput.addEventListener("keydown", event => {
+      if (event.key === "Enter") {
+        unlockCourse();
       }
     });
 
-    modal.addEventListener('click', event => {
-      if (event.target === modal) closeGate();
+    closeModalButton.addEventListener("click", closeGate);
+
+    modal.addEventListener("click", event => {
+      if (event.target === modal) {
+        closeGate();
+      }
     });
 
-    document.addEventListener('keydown', event => {
-      if (event.key === 'Escape') closeGate();
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape") {
+        closeGate();
+      }
     });
   </script>
 </body>
