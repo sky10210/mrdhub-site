@@ -3,11 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mr. D's Student Portal | Mr. D's Hub</title>
+  <title>Personal Financial Management | Mr. D's Hub</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
+
     :root {
       --bg: #1C1917;
       --bg-deep: #0F0E0D;
@@ -521,107 +522,100 @@
       .hero-actions .btn { width: 100%; }
       .district-line { letter-spacing: .12em; }
     }
+  
+    .module-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+    .module-card {
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(41,37,36,.78), rgba(15,14,13,.56));
+      border-radius: var(--radius);
+      padding: 22px;
+      box-shadow: 0 20px 50px rgba(0,0,0,.20);
+    }
+    .module-card h3 { margin-bottom: 8px; letter-spacing: -.04em; }
+    .module-card p { color: var(--muted); line-height: 1.55; margin-bottom: 16px; }
+    .back-link { margin-top: 18px; }
+    @media (max-width: 760px) { .module-list { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
   <header class="topbar">
     <nav class="shell nav">
-      <a href="#top" class="brand" aria-label="Mr. D's Hub home">
+      <a href="index.html" class="brand" aria-label="Mr. D's Hub home">
         <div class="brand-mark">D</div>
         <div class="brand-text">Mr. D's Hub <span>mrdhub.com</span></div>
       </a>
       <div class="navlinks">
-        <a href="#courses">Classes</a>
+        <a href="index.html#courses">Classes</a>
         <a href="business-dashboard.html">Business Dashboard</a>
-        <a href="#student-tools">Student Tools</a>
+        <a href="index.html#student-tools">Student Tools</a>
         <a href="about-contact.html">About Me / Contact</a>
       </div>
     </nav>
   </header>
 
-  <main id="top">
+  <main>
     <section class="hero shell">
-      <h1><span class="gradient-text">Mr. D's Student Portal</span></h1>
-      <p>Select your class below to access course modules, student work links, current-event activities, and real-world business data used in class.</p>
+      <h1><span class="gradient-text">Personal Financial Management</span></h1>
+      <p>Banking, credit, taxes, insurance, transportation, investing, and smart consumer decisions.</p>
       <div class="hero-actions">
-        <a class="btn btn-primary" href="#courses">Choose Your Class →</a>
-        <a class="btn btn-secondary" href="business-dashboard.html">Business Dashboard</a>
-      </div>
-
-      <div class="quick-strip">
-        <div class="quick-item"><strong>4 Class Portals</strong><span>Access class modules and resources</span></div>
-        <div class="quick-item"><strong>Business Info</strong><span>Current events, markets, and data</span></div>
-        <div class="quick-item"><strong>Mentimeter</strong><span>Join live class questions and activities</span></div>
-      </div>
-
-      <div class="district-line">Chambersburg Area School District</div>
-
-      <div class="student-launch">
-        <a class="btn btn-menti" href="https://www.mentimeter.com/" target="_blank" rel="noopener">Mentimeter →</a>
+        <a class="btn btn-primary" href="#modules">View Modules →</a>
+        <a class="btn btn-secondary" href="index.html">Back to Home</a>
       </div>
     </section>
 
-    <section class="shell" id="courses">
+    <section class="shell" id="modules">
       <div class="section-heading">
-        <div><h2>Choose Your Class</h2></div>
-        <p>Choose your class below to access modules, assignments, activities, and course resources.</p>
+        <div><h2>Course Landing Page</h2></div>
+        <p>Add module links, Netlify/Pages activities, Google Forms, vocab tools, project directions, and review resources here.</p>
       </div>
-
-      <div class="courses">
-        <article class="course-card">
-          <div class="course-icon">💼</div>
-          <h3>AP Business with Personal Finance</h3>
-          <p>College-style business thinking with personal finance, decision-making, market forces, and real-world case studies.</p>
-          <div class="tag-list"><span class="tag">AP Skills</span><span class="tag">Finance</span><span class="tag">Case Studies</span></div>
-          <button class="btn locked" onclick="openGate('AP Business with Personal Finance')">Enter Class <span>→</span></button>
+      <div class="module-list">
+        <article class="module-card">
+          <h3>Module Links</h3>
+          <p>Replace this card with links to your hosted class modules. Example: Unit 1 vocabulary, paycheck module, sports marketing case, or AP Business topic page.</p>
+          <a class="btn btn-secondary" href="#">Add Link</a>
         </article>
-
-        <article class="course-card">
-          <div class="course-icon">📣</div>
-          <h3>Marketing Fundamentals</h3>
-          <p>Branding, target markets, advertising, consumer behavior, sports marketing, entertainment, and event strategy.</p>
-          <div class="tag-list"><span class="tag">Branding</span><span class="tag">Sports MKT</span><span class="tag">Ads</span></div>
-          <button class="btn locked" onclick="openGate('Marketing Fundamentals')">Enter Class <span>→</span></button>
+        <article class="module-card">
+          <h3>Current Assignment</h3>
+          <p>Use this spot for the activity students should open first when they arrive in class.</p>
+          <a class="btn btn-secondary" href="#">Add Assignment</a>
         </article>
-
-        <article class="course-card">
-          <div class="course-icon">💳</div>
-          <h3>Personal Financial Management</h3>
-          <p>Practical money skills for high schoolers: banking, credit, taxes, insurance, investing, and smart consumer choices.</p>
-          <div class="tag-list"><span class="tag">PFM</span><span class="tag">Credit</span><span class="tag">Insurance</span></div>
-          <button class="btn locked" onclick="openGate('Personal Financial Management')">Enter Class <span>→</span></button>
+        <article class="module-card">
+          <h3>Review / Study</h3>
+          <p>Add vocabulary practice, quiz review, Mentimeter links, or study guides.</p>
+          <a class="btn btn-secondary" href="#">Add Review</a>
         </article>
-
-        <article class="course-card">
-          <div class="course-icon">🚀</div>
-          <h3>Business 101</h3>
-          <p>An approachable entry point into business, careers, entrepreneurship, economics, leadership, and workplace readiness.</p>
-          <div class="tag-list"><span class="tag">Careers</span><span class="tag">Econ</span><span class="tag">Startups</span></div>
-          <button class="btn locked" onclick="openGate('Business 101')">Enter Class <span>→</span></button>
+        <article class="module-card">
+          <h3>Project Resources</h3>
+          <p>Add rubrics, examples, templates, and project directions.</p>
+          <a class="btn btn-secondary" href="#">Add Resource</a>
         </article>
       </div>
     </section>
 
-    <section class="shell" id="student-tools">
-      <div class="section-heading">
-        <div><h2>Directions for Using Mr. D's Student Portal</h2></div>
-        <p>Use this site as your starting point for class modules, review activities, current-event connections, and assignment links.</p>
-      </div>
-
+    <section class="shell">
       <div class="spotlight">
+        
         <article class="spotlight-card">
-          <h3>Choose your class</h3>
-          <p>Start by selecting the course card that matches your schedule. Your class page will include modules, activities, review materials, and important links.</p>
+          <h3>Skill first</h3>
+          <p>Lead with the most practical module students need today.</p>
         </article>
+
         <article class="spotlight-card">
-          <h3>Use the class password</h3>
-          <p>Some pages are locked so materials stay organized by class. Enter the password provided by Mr. D when prompted.</p>
+          <h3>Collect completions</h3>
+          <p>Link modules that send scores to your Google Sheet completion tab.</p>
         </article>
+
         <article class="spotlight-card">
-          <h3>Complete and submit</h3>
-          <p>When a module asks for your name, class period, score, or reflection, make sure everything is entered accurately before submitting.</p>
+          <h3>Review bank</h3>
+          <p>Keep quick check activities and end-of-year review links here.</p>
         </article>
       </div>
+      <div class="back-link"><a class="btn btn-primary" href="index.html">← Back to Mr. D's Hub</a></div>
     </section>
   </main>
 
@@ -631,76 +625,6 @@
       <div>skyler.dipasquale@casdonline.org • mrdhub.com</div>
     </div>
   </footer>
-
-  <div class="modal" id="gateModal" aria-hidden="true">
-    <div class="modal-card">
-      <div class="modal-head">
-        <div>
-          <h3 id="modalTitle">Class Access</h3>
-          <p class="caption">Enter the class password to access your course portal.</p>
-        </div>
-        <button class="x" onclick="closeGate()" aria-label="Close">×</button>
-      </div>
-      <div class="portal-login"><input id="coursePassword" type="password" placeholder="Enter Class Password" />
-        <button class="btn btn-primary" onclick="demoUnlock()">Continue</button>
-      </div>
-      <p class="tiny-note">Use the password given in class. See Mr. D if you are having trouble accessing your course page.</p>
-      <div class="success-box" id="successBox">Access granted. Redirecting to your class portal...</div>
-    </div>
-  </div>
-
-  <script>
-    const modal = document.getElementById('gateModal');
-    const modalTitle = document.getElementById('modalTitle');
-    const successBox = document.getElementById('successBox');
-    let selectedCourse = '';
-
-    const courseLinks = {
-      'AP Business with Personal Finance': 'ap-business.html',
-      'Marketing Fundamentals': 'marketing-fundamentals.html',
-      'Personal Financial Management': 'personal-financial-management.html',
-      'Business 101': 'business-101.html'
-    };
-
-    document.getElementById('year').textContent = new Date().getFullYear();
-
-    function openGate(courseName) {
-      selectedCourse = courseName;
-      modalTitle.textContent = courseName + ' Access';
-      successBox.style.display = 'none';
-      document.getElementById('coursePassword').value = '';
-      modal.classList.add('active');
-      modal.setAttribute('aria-hidden', 'false');
-      setTimeout(() => document.getElementById('coursePassword').focus(), 100);
-    }
-
-    function closeGate() {
-      modal.classList.remove('active');
-      modal.setAttribute('aria-hidden', 'true');
-    }
-
-    function demoUnlock() {
-      const password = document.getElementById('coursePassword').value.trim().toLowerCase();
-
-      if (password === 'cashs') {
-        successBox.style.display = 'block';
-
-        setTimeout(() => {
-          window.location.href = courseLinks[selectedCourse] || 'index.html';
-        }, 600);
-
-      } else {
-        alert('Incorrect class password.');
-      }
-    }
-
-    modal.addEventListener('click', event => {
-      if (event.target === modal) closeGate();
-    });
-
-    document.addEventListener('keydown', event => {
-      if (event.key === 'Escape') closeGate();
-    });
-  </script>
+  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
 </body>
 </html>
